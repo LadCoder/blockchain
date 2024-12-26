@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { Chain } from './classes/Chain';
 
 const app = express();
@@ -7,7 +7,7 @@ app.use(express.json());  // For parsing JSON bodies
 const blockchain = Chain.instance;
 
 // Basic endpoint to check if server is running
-app.get('/', (req, res) => {
+app.get('/', (_: Request, res: Response) => {
     res.json({
         message: 'Blockchain server is running!',
         endpoints: {
@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 });
 
 // Get the full blockchain
-app.get('/blockchain', (req, res) => {
+app.get('/blockchain', (_: Request, res: Response) => {
     res.json({
         chain: blockchain.chain,
         isValid: blockchain.isChainValid()
@@ -34,7 +34,7 @@ app.get('/blockchain', (req, res) => {
 });
 
 // Get blockchain stats
-app.get('/stats', (req, res) => {
+app.get('/stats', (_: Request, res: Response) => {
     res.json({
         totalBlocks: blockchain.size,
         latestBlock: blockchain.lastBlock,
@@ -45,15 +45,31 @@ app.get('/stats', (req, res) => {
 });
 
 // Get latest blocks (with limit parameter)
-app.get('/latest-blocks', (req, res) => {
+app.get('/latest-blocks', (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 5;
     const latestBlocks = blockchain.chain.slice(-limit);
 
     res.json(latestBlocks);
 });
 
+// Get block by hash
+app.get('/blockchain/:hash', (req: Request, res: Response) => {
+    const { hash } = req.params;
+    const block = blockchain.chain.find(b => b.hash === hash);
+
+    if (block) {
+        res.status(200).json(block);
+        return;
+    }
+
+    res.status(404).json({
+        error: 'Block not found',
+        details: 'No block found with the given hash'
+    });
+});
+
 // Manual mining endpoint (for testing)
-app.post('/mine', (req, res) => {
+app.post('/mine', (req: Request, res: Response) => {
     const { nonce } = req.body;
 
     try {
