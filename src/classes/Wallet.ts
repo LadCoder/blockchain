@@ -31,4 +31,23 @@ export class Wallet {
     const signature = sign.sign(this.privateKey);
     Chain.instance.addBlock(transaction, this.publicKey, signature);
   }
+
+  getBalance(): number {
+    const blockchain = Chain.instance;
+    const balance = blockchain.chain.reduce((sum, block) => {
+      const transaction = block.transaction;
+
+      if (transaction.payer === this.publicKey) {
+        sum -= transaction.amount;
+      }
+
+      if (transaction.payee === this.publicKey) {
+        sum += transaction.amount;
+      }
+
+      return sum;
+    }, 0);
+
+    return balance;
+  }
 }

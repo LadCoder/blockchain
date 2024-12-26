@@ -6,6 +6,7 @@ const app = express();
 app.use(express.json());  // For parsing JSON bodies
 
 const blockchain = Chain.instance;
+const wallets: Wallet[] = [];
 
 // Basic endpoint to check if server is running
 app.get('/', (_: Request, res: Response) => {
@@ -93,6 +94,8 @@ app.post('/mine', (req: Request, res: Response) => {
 app.post('/wallet', (_: Request, res: Response) => {
     try {
         const wallet = new Wallet();
+        wallets.push(wallet);
+
         res.status(201).json({
             address: wallet.publicKey,
             privateKey: wallet.privateKey,
@@ -102,6 +105,35 @@ app.post('/wallet', (_: Request, res: Response) => {
         const err = error as Error;
         res.status(500).json({
             error: 'Failed to create wallet',
+            details: err.message
+        });
+    }
+});
+
+// Get wallet balance
+app.get('/wallet/balance', (req: Request, res: Response) => {
+    const { privateKey } = req.body;
+
+    try {
+        const wallet = wallets.find(w => w.privateKey === privateKey);
+        if (!wallet) {
+            res.status(404).json({
+                error: 'Wallet not found',
+                details: 'No wallet found with the given private key'
+            });
+            return;
+        }
+
+        const balance = wallet.getBalance();
+
+        res.json({
+            address: wallet.publicKey,
+            balance
+        });
+    } catch (error) {
+        const err = error as Error;
+        res.status(400).json({
+            error: 'Failed to get wallet balance',
             details: err.message
         });
     }
