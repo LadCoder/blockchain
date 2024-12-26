@@ -14,8 +14,12 @@ export class Chain {
         ];
     }
 
+    get size() {
+        return this.chain.length;
+    }
+
     get lastBlock() {
-        return this.chain[this.chain.length - 1];
+        return this.chain[this.size - 1];
     }
 
     mine(nonce: number) {

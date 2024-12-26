@@ -33,6 +33,17 @@ app.get('/blockchain', (req, res) => {
     });
 });
 
+// Get blockchain stats
+app.get('/stats', (req, res) => {
+    res.json({
+        totalBlocks: blockchain.size,
+        latestBlock: blockchain.lastBlock,
+        isValid: blockchain.isChainValid(),
+        difficulty: 4,
+        totalTransactions: blockchain.size - 1 // Excluding genesis block
+    });
+});
+
 // Start the server
 const PORT = 3000;
 app.listen(PORT, () => {
