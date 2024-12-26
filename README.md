@@ -58,8 +58,6 @@ A TypeScript implementation of a basic blockchain with wallet management, proof-
 
 The server will start running on http://localhost:3000
 
-## Development
-
 ## Technical Details
 
 - Built with TypeScript and Express.js
