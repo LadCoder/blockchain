@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { Chain } from './classes/Chain';
+import { Wallet } from './classes/Wallet';
 
 const app = express();
 app.use(express.json());  // For parsing JSON bodies
@@ -83,6 +84,24 @@ app.post('/mine', (req: Request, res: Response) => {
         const err = error as Error;
         res.status(400).json({
             error: 'Mining failed',
+            details: err.message
+        });
+    }
+});
+
+// Create a new wallet
+app.post('/wallet', (_: Request, res: Response) => {
+    try {
+        const wallet = new Wallet();
+        res.status(201).json({
+            address: wallet.publicKey,
+            privateKey: wallet.privateKey,
+            message: 'Keep your private key safe! It will not be shown again.'
+        });
+    } catch (error) {
+        const err = error as Error;
+        res.status(500).json({
+            error: 'Failed to create wallet',
             details: err.message
         });
     }
