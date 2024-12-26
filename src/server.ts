@@ -44,6 +44,14 @@ app.get('/stats', (req, res) => {
     });
 });
 
+// Get latest blocks (with limit parameter)
+app.get('/latest-blocks', (req, res) => {
+    const limit = parseInt(req.query.limit as string) || 5;
+    const latestBlocks = blockchain.chain.slice(-limit);
+
+    res.json(latestBlocks);
+});
+
 // Manual mining endpoint (for testing)
 app.post('/mine', (req, res) => {
     const { nonce } = req.body;
