@@ -49,4 +49,32 @@ export class Chain {
         }
 
     }
+
+    isChainValid(): boolean {
+        // Loop through all blocks (except genesis block)
+        for (let i = 1; i < this.chain.length; i++) {
+            const currentBlock = this.chain[i];
+            const previousBlock = this.chain[i - 1];
+
+            // 1. Verify current block's hash
+            if (currentBlock.hash !== currentBlock.calculateHash()) {
+                console.log('Invalid block hash');
+                return false;
+            }
+
+            // 2. Verify block link (previous hash)
+            if (currentBlock.prevHash !== previousBlock.hash) {
+                console.log('Invalid block chain link');
+                return false;
+            }
+
+            // 3. Verify proof of work (if your difficulty is 4)
+            if (!currentBlock.hash.startsWith('0000')) {
+                console.log('Invalid proof of work');
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

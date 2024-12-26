@@ -8,12 +8,29 @@ const blockchain = Chain.instance;
 
 // Basic endpoint to check if server is running
 app.get('/', (req, res) => {
-    res.json({ message: 'Blockchain server is running!' });
+    res.json({
+        message: 'Blockchain server is running!',
+        endpoints: {
+            GET: [
+                '/',
+                '/blockchain',
+                '/balance/:address',
+                '/pending'
+            ],
+            POST: [
+                '/transaction',
+                '/mine'
+            ]
+        }
+    });
 });
 
 // Get the full blockchain
 app.get('/blockchain', (req, res) => {
-    res.json(blockchain.chain);
+    res.json({
+        chain: blockchain.chain,
+        isValid: blockchain.isChainValid()
+    });
 });
 
 // Start the server

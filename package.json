@@ -6,8 +6,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "dev": "tsc --watch",
-    "start": "tsc && node .",
     "server": "ts-node src/server.ts",
     "dev:server": "nodemon src/server.ts"
   },
