@@ -44,6 +44,26 @@ app.get('/stats', (req, res) => {
     });
 });
 
+// Manual mining endpoint (for testing)
+app.post('/mine', (req, res) => {
+    const { nonce } = req.body;
+
+    try {
+        const solution = blockchain.mine(nonce);
+        res.json({
+            message: 'Mining successful',
+            solution,
+            nonce
+        });
+    } catch (error) {
+        const err = error as Error;
+        res.status(400).json({
+            error: 'Mining failed',
+            details: err.message
+        });
+    }
+});
+
 // Start the server
 const PORT = 3000;
 app.listen(PORT, () => {
