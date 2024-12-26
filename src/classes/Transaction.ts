@@ -7,7 +7,13 @@ export class Transaction {
     this.payee = payee;
   }
 
+  toString() {
+    return JSON.stringify(this);
+  }
+
   get hash() {
-    return crypto.createHash("sha256").update(this.toString()).digest("hex");
+    const str = this.toString();
+    const hash = crypto.createHash("MD5");
+    return hash.update(str).digest("hex");
   }
 }

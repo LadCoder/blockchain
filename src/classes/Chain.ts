@@ -2,15 +2,18 @@ import * as crypto from "crypto";
 
 import { Block } from "./Block";
 import { Transaction } from "./Transaction";
+import { Wallet } from "./Wallet";
 
 export class Chain {
     public static instance = new Chain();
+    public genesisWallet: Wallet;
 
     chain: Block[];
 
     constructor() {
+        this.genesisWallet = new Wallet();
         this.chain = [
-            new Block('', new Transaction(100, 'genesis', 'satoshi'))
+            new Block('', new Transaction(100, 'genesis', this.genesisWallet.publicKey))
         ];
     }
 
@@ -22,16 +25,13 @@ export class Chain {
         return this.chain[this.size - 1];
     }
 
-    mine(nonce: number) {
+    mine(block: Block) {
         let solution = 1;
         console.log("⛏️  mining...");
 
         while (true) {
-
-            const hash = crypto.createHash('MD5');
-            hash.update((nonce + solution).toString()).end();
-
-            const attempt = hash.digest('hex');
+            block.nonce = solution;
+            const attempt = block.calculateHash();
 
             if (attempt.startsWith('0000')) {
                 console.log(`Solved: ${solution}`);
@@ -48,10 +48,11 @@ export class Chain {
 
         if (isValid) {
             const newBlock = new Block(this.lastBlock.hash, transaction);
-            this.mine(newBlock.nonce);
+            const solution = this.mine(newBlock);  // Pass the entire block
+            newBlock.nonce = solution;
+            newBlock.hash = newBlock.calculateHash();
             this.chain.push(newBlock);
         }
-
     }
 
     isChainValid(): boolean {
@@ -72,7 +73,7 @@ export class Chain {
                 return false;
             }
 
-            // 3. Verify proof of work (if your difficulty is 4)
+            // 3. Verify proof of work
             if (!currentBlock.hash.startsWith('0000')) {
                 console.log('Invalid proof of work');
                 return false;

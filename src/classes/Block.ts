@@ -13,12 +13,12 @@ export class Block {
 
   calculateHash(): string {
     const str = this.prevHash +
-      this.timestamp +
-      JSON.stringify(this.transaction) +
-      this.nonce;
+      this.timestamp.toString() +
+      this.transaction.toString() +
+      this.nonce.toString();
 
     return crypto
-      .createHash('sha256')
+      .createHash('MD5')
       .update(str)
       .digest('hex');
   }
